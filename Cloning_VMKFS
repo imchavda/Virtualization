@@ -1,0 +1,86 @@
+Clone VM41 from datastore2_FULL to datastore6.
+
+The VM41 having two vmdk files. 
+
+*********Scenario*********
+Client version: 1.30.0
+Client build number: 9946814
+ESXi version: 6.7.0
+ESXi build number: 11675023
+
+=================================================================
+Step 1: power off VM41.
+Step 2: Check file system and type of storage
+
+********File system********
+01. datastore2_FULL is having VMFS5 file system.
+02. datastore6 is having VMFS6 file system.
+********Type of storage********
+Thin 
+
+Step 3: create a new directory under datastore6
+# mkdir -p /vmfs/volumes/datastore6/CS-PDC-NEW
+
+Source file location: 
+#/vmfs/volumes/datastore2_FULL/W2K12-R2-VM41/
+Destination file location: 
+#/vmfs/volumes/datastorea6/CS-PDC-NEW/
+
+
+********Source file name********
+01. W2K12-R2-VM41-000003.vmdk
+02. W2K12-R2-VM41_1.vmdk
+Destination file name:- 
+01. cs-pdc-new.vmdk
+02. cs-pdc-new-1.vmdk
+
+Step 4: Command to clone VM
+# vmkfstools -i W2K12-R2-VM41-000003.vmdk /vmfs/volumes/datastore6/CS-PDC-NEW/cs-pdc-new.vmdk -d thin
+
+**************************************************************************************************************
+[PLABS\ajay_chavda@CSQAESXi-3:~] mkdir -p /vmfs/volumes/datastore6/CS-PDC-NEW
+[PLABS\ajay_chavda@CSQAESXi-3:~] cd /vmfs/volumes/datastore2_FULL/
+[PLABS\ajay_chavda@CSQAESXi-3:/vmfs/volumes/555c85a4-bde3adb2-6b78-20256474a4b8] ls
+W2K12-R2-VM41  W2K12-R2-VM42
+[PLABS\ajay_chavda@CSQAESXi-3:/vmfs/volumes/555c85a4-bde3adb2-6b78-20256474a4b8] cd W2K12-R2-VM41
+[PLABS\ajay_chavda@CSQAESXi-3:/vmfs/volumes/555c85a4-bde3adb2-6b78-20256474a4b8/W2K12-R2-VM41] ls
+W2K12-R2-VM41-000003-delta.vmdk  W2K12-R2-VM41-flat.vmdk          W2K12-R2-VM41.vmx                vmware-70.log                    vmware-74.log
+W2K12-R2-VM41-000003.vmdk        W2K12-R2-VM41.nvram              W2K12-R2-VM41.vmxf               vmware-71.log                    vmware-75.log
+W2K12-R2-VM41-Snapshot15.vmsn    W2K12-R2-VM41.vmdk               W2K12-R2-VM41_1-flat.vmdk        vmware-72.log                    vmware.log
+[PLABS\ajay_chavda@CSQAESXi-3:/vmfs/volumes/555c85a4-bde3adb2-6b78-20256474a4b8/W2K12-R2-VM41] vmkfstools -i W2K12-R2-VM41-000003.vmdk /vmfs/volumes/datastore6/CS-PDC-NEW/cs-pdc-new.vmdk -d thin
+Destination disk format: VMFS thin-provisioned
+Cloning disk 'W2K12-R2-VM41-000003.vmdk'...
+Clone: 100% done.
+**************************************************************************************************************
+
+Once the vms vmdk files cloned. follow below steps:
+Step 6: Create a new Virtual machine
+Step 7: Name: CS-PDC-NEW
+		Select compatibility: ESXi 6.7 VM
+		Guest OS family: Windows
+		Guest OS version: Windows server 2012 (64bit)
+Step 8: Select storage (datastore6)
+Step 9: Customize settings
+		Remove harddisk1
+		and add existing harddisk and browse and attached these two files 01. W2K12-R2-VM41-000003.vmdk 02.W2K12-R2-VM41_1.vmdk
+Step 10: finish
+Step 11: power on new VM
+
+Please note do not power on old vm As there might be IP conflict issue arise.  
+=================================================================
+
+**************************************************************************************************************
+Source file name:- /vmfs/volumes/datastore2_FULL/W2K12-R2-VM41/W2K12-R2-VM41_1.vmdk
+Destination file name:- cs-pdc-new-1.vmdk
+vmkfstools -i W2K12-R2-VM41_1.vmdk /vmfs/volumes/datastore6/CS-PDC-NEW/cs-pdc-new-1.vmdk -d thin
+
+[PLABS\ajay_chavda@CSQAESXi-3:/vmfs/volumes/555c85a4-bde3adb2-6b78-20256474a4b8/W2K12-R2-VM41] vmkfstools -i W2K12-R2-VM41_1.vmdk /vmfs/volumes/datastore6/CS-PDC-NEW/cs-pdc-new-1.vmdk -d thin
+Destination disk format: VMFS thin-provisioned
+Cloning disk 'W2K12-R2-VM41_1.vmdk'...
+Clone: 100% done.
+**************************************************************************************************************
+
+
+
+
+
