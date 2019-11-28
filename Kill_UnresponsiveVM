@@ -1,0 +1,37 @@
+https://www.virten.net/2015/01/how-to-kill-an-unresponsive-vm-esxi-5-x/
+
+How to kill unreponsive VM?
+
+Senario: ESXi version: 6.5.0
+VM name: W10-64-VM32
+
+Step 1: Login into ESXi using SSH.
+
+Step 2:  Find World ID by using command #vmdumper -l | grep W10-64-VM32
+
+Step 3:  There is VM name against world id specified such as:
+wid=1523531     pid=-1  cfgFile="/vmfs/volumes/5790a5cd-533c69c6-5a10-001e67fbff2e/W10-64-VM32/W10-64-VM32.vmx" uuid="56 4d 57 9a 00 30 c8 34-9a cc 92 b2 aa 8e a0 b9"  displayName="W10-64-VM32"    vmxCartelID=1523530
+
+Step 4: you can verify above details by using this command #esxcli vm process list  it will list all world id find world id 1523531 out of all VMs.
+W10-64-VM32
+   World ID: 1523531
+   Process ID: 0
+   VMX Cartel ID: 1523530
+   UUID: 56 4d 57 9a 00 30 c8 34-9a cc 92 b2 aa 8e a0 b9
+   Display Name: W10-64-VM32
+   Config File: /vmfs/volumes/5790a5cd-533c69c6-5a10-001e67fbff2e/W10-64-VM32/W10-64-VM32.vmx
+
+Step 5: kill the process by using below commands.
+Kill process softly
+#esxcli vm process kill -w 1523531 -t soft
+
+Kill process hardly
+#esxcli vm process kill -w 1523531 -t hard
+
+Kill process forcefully
+#esxcli vm process kill -w 1523531 -t force
+
+Step 5: Verify process is still active (vmdumper output still displays the virtual machine) 
+#vmdumper  -l |grep 1523531
+
+Step 6: If the process is still running, reboot the ESXi host.
