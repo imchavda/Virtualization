@@ -1,0 +1,24 @@
+https://www.vmware.com/support/ws55/doc/ws_learning_files_in_a_vm.html
+
+ File system of ESXi - 
+ VMFS - Virtual machine File system use in ESXi and vSphere.
+
+.nvram - This file contain BIOS
+.vmx -   This file contains all the configuration information and hardware settings of the VM. RAM size, 
+         network interface card info, hard drive info and serial/parallel port info -- advanced power and resource settings, 
+         VMware tools options and power management options.
+.vmdk -  Virtual disk file which stores the contents of the virtual machine's hard disk drive. 
+.vmsd -  This is a centralized file for storing information and metadata about snapshots. 
+.vmsn -  Snapshot file extension. 
+.vswp - Virtual machine executable (VMX) swap files allow the host to greatly reduce the amount of overhead memory reserved for the VMX process.
+ESXi reserves memory per virtual machine for a variety of purposes. Memory for the needs of certain components, 
+such as the virtual machine monitor (VMM) and virtual devices, is fully reserved when a virtual machine is powered on. 
+However, some of the overhead memory that is reserved for the VMX process can be swapped. 
+The VMX swap feature reduces the VMX memory reservation significantly (for example, from about 50MB or more per virtual machine to about 10MB per virtual machine). 
+This allows the remaining memory to be swapped out when host memory is overcommitted, reducing overhead memory reservation for each virtual machine.
+
+The host creates VMX swap files automatically, provided there is sufficient free disk space at the time a virtual machine is powered on.
+https://pubs.vmware.com/vsphere-50/index.jsp?topic=/com.vmware.vsphere.resmgmt.doc_50/GUID-51767DC5-9A03-4B41-A385-9A11F6BD36F1.html
+
+Please note
+VMDK 5.0 is now an open format.
