@@ -1,0 +1,5 @@
+I have provided you 5GB but you may used only 2GB and other 3GB will be free. 
+In Thick Provisioning we can’t do this, because it will allocate the whole space at first itself.
+
+In thin Provisioning if I’m defining 5GB for you it won’t allocate the whole disk space while defining a volume, 
+it will grow till 5GB according to your data write,
