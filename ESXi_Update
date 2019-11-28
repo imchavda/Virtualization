@@ -1,0 +1,92 @@
+==========================================================================================================================
+												                                ESXi patch
+==========================================================================================================================
+
+Ref - https://kb.vmware.com/s/article/2008939
+
+Patches can either "installed" or "updated" on esxi host using esxcli software vib commands
+
+01. Patches for VMware products can be obtained from the VMware patch portal. Select ESXi (Embedded and Installable) in the product dropdown and click Search.
+02. Click the Download link below the patch Release Name to download the patch to your system.
+03. Upload the patch to a datastore on your ESXi 5.x/6.x host using the Datastore Browser from vCenter Server or a direct connection to the ESXi 5.x/6.x host using the vSphere Web client.
+
+Note: VMware recommends creating a new directory on the datastore and uploading the patch file to this directory.
+
+04. Migrate or power off the virtual machines running on the host and put the host into maintenance mode. The host can be put into maintenance mode by running this command:
+
+# vim-cmd hostsvc/maintenance_mode_enter 
+
+05. Navigate to the directory on the datastore where the patch file was uploaded to and verify that the file exists by running these commands:
+
+# cd /vmfs/volumes/Datastore/DirectoryName
+# ls 
+
+Where Datastore is the datastore name where the patch file was uploaded to, and DirectoryName is the directory you created on the datastore.
+
+06. Install or update a patch on the host using these esxcli commands:
+To install:
+esxcli software vib install -d "/vmfs/volumes/Datastore/DirectoryName/PatchName.zip"
+-d indicate - Zip file
+
+OR
+
+esxcli software vib install -v https://hostupdate.vmware.com/software/VUM/PRODUCTION/main/esx/vmw/vib20/tools-light/VMware_locker_tools-light_5.0.0-0.7.515841.vib 
+-v indicate - viburl 
+
+To update:
+# esxcli software vib update -d "/vmfs/volumes/Datastore/DirectoryName/PatchName.zip" 
+-d indicate - Zip file
+
+OR
+
+# esxcli software vib update -v https://hostupdate.vmware.com/software/VUM/PRODUCTION/main/esx/vmw/vib20/tools-light/VMware_locker_tools-light_5.0.0-0.7.515841.vib
+-v indicate - viburl 
+
+
+Where viburl is the URL to the http depot where VIB packages reside.
+
+
+Notes:
+ 
+
+    To install or update a .zip file, use the -d option. To install or update a .vib file use the -v option.
+
+    Using the update command is the recommended method for patch application. Using this command applies all of the newer contents in a patch, including all security fixes. Contents of the patch that are a lower revision than the existing packages on the system are not applied.
+
+    Using the install command overwrites the existing packages in the system with contents of the patch you are installing, including installing new packages and removing old packages. The install command may downgrade packages on the system and should be used with caution. If required, the install command can be used to downgrade a system (only for image profiles) when the --allow-downgrade flag is set.
+    Using the install command overwrites the existing packages in the system with contents of the patch you are installing, including installing new packages and removing old packages. The install command may downgrade packages on the system and should be used with caution. If required, the install command can be used to downgrade a system (only for image profiles) when the --allow-downgrade flag is set.
+
+Caution: The install method has the possibility of overwriting existing drivers. If you are using third-party ESXi images or the ESXi host is part of a vSAN cluster, VMware recommends using the update method to prevent an unbootable state or a vSAN node that no longer contributes storage to the cluster.
+
+07. Verify that the VIBs are installed on your ESXi host:
+# esxcli software vib list 
+
+08. After the patch has been installed, reboot the ESX host:
+# reboot
+
+09. After the host has finished booting, exit maintenance mode and power on the virtual machines:
+# vim-cmd hostsvc/maintenance_mode_exit 
+
+
+==========================================================================================================================
+										Upgrade or Update a Host with Image Profiles
+==========================================================================================================================
+Example - ESXi 5.5 Patch 2 contains 4 Image Profiles:
+
+    ESXi-5.5.0-20140704001-standard - Contains all patches
+    ESXi-5.5.0-20140704001-no-tools - Contains all patches but no VMware Tools
+    ESXi-5.5.0-20140701001s-standard - Contains security patches only
+    ESXi-5.5.0-20140701001s-no-tools - Contains security patches only and no VMware Tools
+
+esxcli software profile update --depot=depot_location --profile=profile_name
+
+esxcli software profile update --depot=/vmfs/volumes/datastore1/Update/update-from-esxi6.7-6.7_update03.zip --profile=ESXi-6.7.0-20190802001-standard --no-hardware-warning
+
+
+esxcli software profile update -d /vmfs/volumes/datastore1/ESXi670-201901001.zip -p ESXi-6.7.0-20190104001-standard
+esxcli software profile update -d /vmfs/volumes/datastore1/ESXi670-201901001.zip -p ESXi-6.7.0-20190104001-standard --no-hardware-warning
+
+
+
+
+
